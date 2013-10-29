@@ -5,6 +5,7 @@ import java.io.FileReader
 import scala.util.parsing.combinator._
 
 object app extends App {
+
   val g = Game(5)
   println(g.board.draw)
   val g2 = g + Point(0, 0) + Point(1,1) + Point(3,3) + Point(0, 4) + Point(0,1) + Point(0, 2)
@@ -20,7 +21,9 @@ object app extends App {
   ;B[ic];W[eg];B[dh];W[eh];B[io];W[ko];B[op];W[no];B[jm];W[km];B[ei];W[fi]
   ;B[fj];W[fh];B[kl];W[jl])
 """)
-  println(g3.get.root.tree.drawTree)
+  println(g3 map { g =>
+    g.root.tree.drawTree
+  } getOrElse g3)
 
   val g4 = SGF.parse("""
 (;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
@@ -39,7 +42,9 @@ nmb}+_0987689809-0=\][]
 ;B[]
 ;W[])
 """)
-  println(g4.get.root.tree.drawTree)
+  println(g4 map { g =>
+    g.root.tree.drawTree
+  } getOrElse g4)
 
   val g5 = SGF.parse("""
 (;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
@@ -58,6 +63,10 @@ PW[White]PB[Black]
   println(g5 map { g =>
     g.root.tree.drawTree
   } getOrElse g5)
+
+  val g6 = SGF.parse(new FileReader("/Users/jpiche/Downloads/kogo.sgf"))
+  //g6.get.root.tree.draw.foreach { println _ }
+  println(g6)
 
 }
 

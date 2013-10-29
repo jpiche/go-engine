@@ -45,5 +45,6 @@ object Game {
     val node: GameNode = root
     node
   }.leaf.loc)
+  def apply(size: Int, zipper: TreeLoc[GameNode]) = new Game(size, zipper)
 }
 
