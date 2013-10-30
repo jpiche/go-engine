@@ -1,6 +1,7 @@
 package net.semeai.go
 
 import java.io.Reader
+import scala.io.Source
 import scala.util.parsing.combinator._
 
 import scalaz._, Scalaz._
@@ -20,7 +21,7 @@ import scalaz._, Scalaz._
  *                 Text | Point  | Move | Stone)
  */
 
-trait SgfParser extends RegexParsers {
+trait SgfParser extends JavaTokenParsers {
 
   // \uFEFF is the UTF-8 BOM. Really?! An SGF file seriously had a BOM at
   // the start.
@@ -44,8 +45,16 @@ trait SgfParser extends RegexParsers {
     }
   }
 
-  lazy val node: Parser[SgfNode] = ";" ~> rep(move | prop) ^^ {
+  lazy val node: Parser[SgfNode] = ";" ~> rep(move | size | komi | prop) ^^ {
     x => SgfNode(x)
+  }
+
+  lazy val size: Parser[SgfProp] = "SZ" ~> "[" ~> """\d+""" <~ "]" ^^ {
+    x => SzProp(x.toInt)
+  }
+
+  lazy val komi: Parser[SgfProp] = "KM" ~> "[" ~> decimalNumber <~ "]" ^^ {
+    x => KomiProp(BigDecimal(x))
   }
 
   lazy val move: Parser[SgfProp] = ("B" | "W") ~ ("[" ~> opt("""[a-z][a-z]""".r) <~ "]") ^^ {
@@ -55,40 +64,34 @@ trait SgfParser extends RegexParsers {
     case "W" ~ Some(x) => WhiteMove(x.charAt(0).toInt - 97, x.charAt(1).toInt - 97)
   }
 
-  lazy val prop: Parser[SgfProp] = ident ~ cvalue ~ rep(cvalue) ^^ {
+  lazy val prop: Parser[SgfProp] = """[A-Z]{1,2}""".r ~ cvalue ~ rep(cvalue) ^^ {
     case "C" ~ x ~ Nil => CommentProp(x)
-    case "SZ" ~ x ~ Nil if wholeNum.unapplySeq(x).isDefined => SzProp(x.toInt)
-    case "KM" ~ x ~ Nil => KomiProp(BigDecimal(x))
     case "RU" ~ x ~ Nil => RulesProp(x)
     case "PW" ~ x ~ Nil => Player(White, x)
     case "PB" ~ x ~ Nil => Player(Black, x)
     case i ~ x ~ y => ComplexProp(i, x :: y)
   }
 
-  //  using {1,2} here causes a stack overflow in certain cases
-  val ident = """[A-Z][A-Z]""".r | """[A-Z]""".r
-
-  val cvalue = "[" ~> """(\\\]|[^\]])*""".r <~ "]" ^^ { x =>
-    """\\\]""".r.replaceAllIn(x, _ => "]")
+  // ?> specifies an atomic group which throws away previous group matches
+  // thus preventing catastrophic backtracking which typically presents itself
+  // as a java.lang.StackOverflowError
+  val cvalue = "[" ~> """(?>\\\]|[^\]])*""".r <~ "]" ^^ {
+    _.replaceAll("""\]""", "]")
   }
-
-  val wholeNum = """\d*""".r
 }
 
 trait SgfGame {
-  def sgfGame(sgf: TreeLoc[SgfNode]): Option[Game] = {
-    val root = sgf.root.tree.rootLabel
 
-    root.size map { s =>
-      val sgft = sgf map { n: SgfNode =>
-        if
-      }
-    } getOrElse None
+  // TODO: map sgf tree into game tree
+  def sgfGame(sgf: TreeLoc[SgfNode]): Option[Game] = {
+    None
   }
 }
 
 object SGF extends SgfParser {
 
-  def parse(reader: Reader) = parseAll(gameTree, reader)
-  def parse(input: String) = parseAll(gameTree, input)
+  // simple string input works for most cases, but for large
+  // inputs we need to use a reader
+  def parse(reader: Reader): ParseResult[TreeLoc[SgfNode]] = parseAll(gameTree, reader)
+  def parse(input: String): ParseResult[TreeLoc[SgfNode]] = parseAll(gameTree, input)
 }
