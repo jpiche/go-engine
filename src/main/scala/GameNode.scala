@@ -2,12 +2,12 @@ package net.semeai.go
 
 sealed trait GameNode
 
-case class MoveNode(
+final case class MoveNode(
   move: Move,
   comments: List[String] = Nil
 ) extends GameNode
 
-case class RootNode(
+final case class RootNode(
   black: String = "Black",
   white: String = "White",
   rules: String = "Japanese",

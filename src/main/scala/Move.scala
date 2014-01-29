@@ -9,13 +9,13 @@ sealed trait Move {
   val time: Option[Instant]
 }
 
-case class Position(
+final case class Position(
   color: Color,
   point: Point,
   time: Option[Instant] = Instant.now.some
 ) extends Move
 
-case class Pass(
+final case class Pass(
   color: Color,
   time: Option[Instant] = Instant.now.some
 ) extends Move

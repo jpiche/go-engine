@@ -3,7 +3,7 @@ package net.semeai.go
 import scalaz._
 import Scalaz._
 
-class Game(
+final class Game(
   size: Int,
   zipper: TreeLoc[GameNode]
 ) {

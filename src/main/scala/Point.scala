@@ -3,7 +3,7 @@ package net.semeai.go
 import scalaz._
 import Scalaz._
 
-case class Point(
+final case class Point(
   x: Int,
   y: Int
 ) {

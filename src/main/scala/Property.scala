@@ -5,13 +5,13 @@ sealed trait Property {
   val content: String
 }
 
-case class GenericProperty(ident: String, content: String) extends Property
+final case class GenericProperty(ident: String, content: String) extends Property
 
-case class Comment(content: String) extends Property {
+final case class Comment(content: String) extends Property {
   val ident = "C"
 }
 
-case class SizeProp(size: Int) extends Property {
+final case class SizeProp(size: Int) extends Property {
   val ident = "SZ"
   val content = size.toString
 }

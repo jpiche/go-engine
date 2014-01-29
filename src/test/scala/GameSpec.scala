@@ -26,5 +26,18 @@ class GameSpec extends Specification {
       ).mkString("", "\n", "\n")
     }
   }
+
+  "Simple capture" should {
+    val g = Game(5) + Point(0, 0) + Point(1,1) + Point(3,3) + Point(0, 4) + Point(0,1) + Point(0, 2) + Point(1, 0) + Point(2, 0)
+    "print a correct board" in {
+      g.board.draw === Seq(
+        "o····",
+        "···•·",
+        "o····",
+        "·o···",
+        "··o··"
+      ).mkString("", "\n", "\n")
+    }
+  }
 }
 

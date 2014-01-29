@@ -5,13 +5,13 @@ import scalaz._, Scalaz._
 
 sealed trait SgfProp
 sealed trait MoveProp extends SgfProp
-case class PassProp(color: Color) extends MoveProp
-case class CommentProp(comment: String) extends SgfProp
-case class SzProp(size: Int) extends SgfProp
-case class KomiProp(komi: BigDecimal) extends SgfProp
-case class RulesProp(rules: String) extends SgfProp
-case class Player(color: Color, name: String) extends SgfProp
-case class ComplexProp(key: String, props: List[String]) extends SgfProp
+final case class PassProp(color: Color) extends MoveProp
+final case class CommentProp(comment: String) extends SgfProp
+final case class SzProp(size: Int) extends SgfProp
+final case class KomiProp(komi: BigDecimal) extends SgfProp
+final case class RulesProp(rules: String) extends SgfProp
+final case class Player(color: Color, name: String) extends SgfProp
+final case class ComplexProp(key: String, props: List[String]) extends SgfProp
 
 sealed trait ColorMoveProp extends MoveProp {
   val x: Int
@@ -20,8 +20,8 @@ sealed trait ColorMoveProp extends MoveProp {
   def toPoint(size: Int) = Point(size - 1 - x, y)
 }
 
-case class BlackMove(x: Int, y: Int) extends MoveProp
-case class WhiteMove(x: Int, y: Int) extends MoveProp
+final case class BlackMove(x: Int, y: Int) extends MoveProp
+final case class WhiteMove(x: Int, y: Int) extends MoveProp
 
 class SgfNode(
   val props: List[SgfProp]

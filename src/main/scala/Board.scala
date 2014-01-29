@@ -1,10 +1,20 @@
 package net.semeai.go
 
-case class Board(
+final case class Board(
   size: Int,
   points: Map[Point,Color] = Map()
 ) {
   lazy val draw = Board.draw(this)
+
+  def each(f: (Point, Option[Color]) => Any) = {
+    val xsize = size - 1
+    for {
+      x <- Range.inclusive(xsize, 0, -1)
+      y <- 0 to xsize
+      p = Point(x, y)
+      π = points.get(p)
+    } yield f(p, π)
+  }
 
   def +(move: Move): Board = move match {
     case Pass(_, _) => this
