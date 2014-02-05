@@ -32,13 +32,6 @@ final class Board(
   def processCaptures(move: Position): (Map[Point, Color], Int) = {
     val friends = move.point.friends(size)
 
-//    val groups: List[List[Point]] = friends map { p =>
-//      points.get(p) match {
-//        case Some(color: Color) if color == move.color.flip => Some(findGroup(p, color))
-//        case _ => None
-//      }
-//    } filter { _.isDefined } map { _.get }
-
     val groups: List[List[Point]] = for {
       friend <- friends
       p = points get friend

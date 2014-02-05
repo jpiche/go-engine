@@ -24,9 +24,9 @@ trait SgfParser extends JavaTokenParsers {
 
   // \uFEFF is the UTF-8 BOM. Really?! An SGF file seriously had a BOM at
   // the start.
-  lazy val gameTree = opt("\uFEFF") ~> complexSeq
+  protected val gameTree = opt("\uFEFF") ~> complexSeq
 
-  lazy val complexSeq: Parser[TreeLoc[SgfNode]] =
+  private val complexSeq: Parser[TreeLoc[SgfNode]] =
     "(" ~> sequence ~ rep(simpleSeq | complexSeq) <~ ")" ^^ {
       case s ~ Nil => s
       case s ~ t => t.foldLeft(s) { (tree, node) =>
@@ -35,35 +35,35 @@ trait SgfParser extends JavaTokenParsers {
       }
     }
 
-  lazy val simpleSeq: Parser[TreeLoc[SgfNode]] = "(" ~> sequence <~ ")"
+  private val simpleSeq: Parser[TreeLoc[SgfNode]] = "(" ~> sequence <~ ")"
 
-  lazy val sequence: Parser[TreeLoc[SgfNode]] = rep1(node) ^^ {
+  private val sequence: Parser[TreeLoc[SgfNode]] = rep1(node) ^^ {
     case x :: Nil => x.leaf.loc
     case x :: nodelist => nodelist.foldLeft(x.leaf.loc) { (t, n) =>
       t insertDownLast n.leaf
     }
   }
 
-  lazy val node: Parser[SgfNode] = ";" ~> rep(move | size | komi | prop) ^^ {
+  private val node: Parser[SgfNode] = ";" ~> rep(move | size | komi | prop) ^^ {
     x => SgfNode(x)
   }
 
-  lazy val size: Parser[SgfProp] = "SZ" ~> "[" ~> """\d+""" <~ "]" ^^ {
+  private val size: Parser[SgfProp] = "SZ" ~> "[" ~> """\d+""" <~ "]" ^^ {
     x => SzProp(x.toInt)
   }
 
-  lazy val komi: Parser[SgfProp] = "KM" ~> "[" ~> decimalNumber <~ "]" ^^ {
+  private val komi: Parser[SgfProp] = "KM" ~> "[" ~> decimalNumber <~ "]" ^^ {
     x => KomiProp(BigDecimal(x))
   }
 
-  lazy val move: Parser[SgfProp] = ("B" | "W") ~ ("[" ~> opt("""[a-z][a-z]""".r) <~ "]") ^^ {
+  private val move: Parser[SgfProp] = ("B" | "W") ~ ("[" ~> opt("""[a-z][a-z]""".r) <~ "]") ^^ {
     case "B" ~ None => PassProp(BLACK)
     case "B" ~ Some(x) => BlackMove(x.charAt(0).toInt - 97, x.charAt(1).toInt - 97)
     case "W" ~ None => PassProp(WHITE)
     case "W" ~ Some(x) => WhiteMove(x.charAt(0).toInt - 97, x.charAt(1).toInt - 97)
   }
 
-  lazy val prop: Parser[SgfProp] = """[A-Z]{1,2}""".r ~ cvalue ~ rep(cvalue) ^^ {
+  private val prop: Parser[SgfProp] = """[A-Z]{1,2}""".r ~ cvalue ~ rep(cvalue) ^^ {
     case "C" ~ x ~ Nil => CommentProp(x)
     case "RU" ~ x ~ Nil => RulesProp(x)
     case "PW" ~ x ~ Nil => Player(WHITE, x)
@@ -74,7 +74,7 @@ trait SgfParser extends JavaTokenParsers {
   // ?> specifies an atomic group which throws away previous group matches
   // thus preventing catastrophic backtracking which typically presents itself
   // as a java.lang.StackOverflowError
-  val cvalue = "[" ~> """(?>\\\]|[^\]])*""".r <~ "]" ^^ {
+  private val cvalue = "[" ~> """(?>\\\]|[^\]])*""".r <~ "]" ^^ {
     _.replaceAll("""\]""", "]")
   }
 }
