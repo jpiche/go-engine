@@ -1,7 +1,6 @@
 package net.semeai.go
 
 import java.io.Reader
-import scala.io.Source
 import scala.util.parsing.combinator._
 
 import scalaz._, Scalaz._
