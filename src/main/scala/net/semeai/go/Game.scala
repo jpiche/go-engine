@@ -1,7 +1,7 @@
 package net.semeai.go
 
-import scalaz._
-import Scalaz._
+import scalaz._, Scalaz._
+
 
 final class Game(
   size: Int,
@@ -18,7 +18,7 @@ final class Game(
 
   lazy val current: GameNode = zipper.tree.rootLabel
   lazy val next: Color = current match {
-    case RootNode(_,_,_,_,_) => Black
+    case _: RootNode => BLACK
     case MoveNode(move,_) => move.color.flip
   }
 

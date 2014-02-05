@@ -6,4 +6,4 @@ project/project
 *.swp
 *~
 *#
-
+.idea

@@ -14,4 +14,3 @@ final case class RootNode(
   komi: BigDecimal = 0,
   size: Int = 19
 ) extends GameNode
-

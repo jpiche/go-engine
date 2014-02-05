@@ -19,4 +19,3 @@ final case class Pass(
   color: Color,
   time: Option[Instant] = Instant.now.some
 ) extends Move
-

@@ -1,15 +1,17 @@
 package net.semeai.go
 
-import scalaz._
-import Scalaz._
+import scalaz._, Scalaz._
+
 
 final case class Point(
   x: Int,
   y: Int
 ) {
-  def friends(limit: Int): List[Point] = Point.directions map {
-    Point.moveBy(this, _, limit)
-  } filter { _.isDefined } map { _.get }
+  def friends(limit: Int): List[Point] = for {
+    dir <- Point.directions
+    p = Point.moveBy(this, dir, limit)
+    if p.isDefined
+  } yield p.get
 
   override def toString = "(%d,%d)" format (x, y)
 }

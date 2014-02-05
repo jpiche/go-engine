@@ -43,8 +43,7 @@ object SgfNode {
   implicit def nodeShow = new Show[SgfNode] {
     override def show(n: SgfNode) = n.props match {
       case x :: Nil => x.toString
-      case x => x.toString
+      case x => x.toString()
     }
   }
 }
-

@@ -58,17 +58,17 @@ trait SgfParser extends JavaTokenParsers {
   }
 
   lazy val move: Parser[SgfProp] = ("B" | "W") ~ ("[" ~> opt("""[a-z][a-z]""".r) <~ "]") ^^ {
-    case "B" ~ None => PassProp(Black)
+    case "B" ~ None => PassProp(BLACK)
     case "B" ~ Some(x) => BlackMove(x.charAt(0).toInt - 97, x.charAt(1).toInt - 97)
-    case "W" ~ None => PassProp(White)
+    case "W" ~ None => PassProp(WHITE)
     case "W" ~ Some(x) => WhiteMove(x.charAt(0).toInt - 97, x.charAt(1).toInt - 97)
   }
 
   lazy val prop: Parser[SgfProp] = """[A-Z]{1,2}""".r ~ cvalue ~ rep(cvalue) ^^ {
     case "C" ~ x ~ Nil => CommentProp(x)
     case "RU" ~ x ~ Nil => RulesProp(x)
-    case "PW" ~ x ~ Nil => Player(White, x)
-    case "PB" ~ x ~ Nil => Player(Black, x)
+    case "PW" ~ x ~ Nil => Player(WHITE, x)
+    case "PB" ~ x ~ Nil => Player(BLACK, x)
     case i ~ x ~ y => ComplexProp(i, x :: y)
   }
 
