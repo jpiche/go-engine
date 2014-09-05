@@ -21,5 +21,10 @@ class SgfSpec extends Specification {
       val f = Source.fromURL(getClass.getResource("/kogo.sgf")).reader()
       SGF.parse(f).successful must beTrue
     }
+
+    "parse a kgs game file which is not finished" in {
+      val f = Source.fromURL(getClass.getResource("/twoeye-Neufx9.sgf")).reader()
+      SGF.parse(f).successful must beTrue
+    }
   }
 }

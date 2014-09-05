@@ -1,7 +1,7 @@
 package net.semeai.go
 
 
-final class Board(
+class Board(
   val size: Int,
   val points: Map[Point,Color]
 ) {
@@ -25,8 +25,8 @@ final class Board(
   }
 
   def +(node: GameNode): Board = node match {
-    case root: RootNode => this
-    case MoveNode(move,_) => this + move
+    case _: RootNode => this
+    case m: MoveNode => this + m.move
   }
 
   def processCaptures(move: Position): (Map[Point, Color], Int) = {
@@ -49,7 +49,7 @@ final class Board(
     (map + (move.point -> move.color), caps.size)
   }
 
-  def findGroup(start: Point, color: Color): List[Point] = {
+  private def findGroup(start: Point, color: Color): List[Point] = {
     @annotation.tailrec
     def loop(search: List[Point], group: List[Point]): List[Point] =
       search match {
@@ -68,7 +68,7 @@ final class Board(
     loop(start :: Nil, Nil)
   }
 
-  def countLibs(group: List[Point]): Int = {
+  private def countLibs(group: List[Point]): Int = {
     @annotation.tailrec
     def loop(p: List[Point], count: Int): Int = p match {
       case Nil => count

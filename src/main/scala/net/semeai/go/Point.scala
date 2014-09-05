@@ -40,4 +40,3 @@ trait PointFunctions {
 }
 
 object Point extends PointFunctions
-

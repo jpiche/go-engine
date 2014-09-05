@@ -2,10 +2,12 @@ package net.semeai.go
 
 import scalaz._, Scalaz._
 
-
-final class Game(
-  size: Int,
-  zipper: TreeLoc[GameNode]
+class Game(
+  val size: Int,
+  zipper: TreeLoc[GameNode] = {
+    val node: GameNode = RootNode()
+    node.leaf.loc
+  }
 ) {
   def +(move: Move): Game = new Game(
     size,
@@ -19,7 +21,7 @@ final class Game(
   lazy val current: GameNode = zipper.tree.rootLabel
   lazy val next: Color = current match {
     case _: RootNode => BLACK
-    case MoveNode(move,_) => move.color.flip
+    case m: MoveNode => m.move.color.flip
   }
 
   lazy val board: Board = {
@@ -36,15 +38,5 @@ final class Game(
 }
 
 object Game {
-  def apply(size: Int, node: GameNode) = new Game(size, node.leaf.loc)
-  def apply(size: Int) = new Game(size, {
-    val node: GameNode = RootNode(size = size)
-    node
-  }.leaf.loc)
-  def apply(root: RootNode) = new Game(root.size, {
-    val node: GameNode = root
-    node
-  }.leaf.loc)
-  def apply(size: Int, zipper: TreeLoc[GameNode]) = new Game(size, zipper)
+  def apply(size: Int) = new Game(size)
 }
-
